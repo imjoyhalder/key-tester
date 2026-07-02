@@ -118,9 +118,19 @@ export const KeyboardLayout = () => {
     const wrapper = wrapperRef.current
     if (!inner || !wrapper) return
     inner.style.zoom = "1"
-    const natural = inner.scrollWidth
+    // getBoundingClientRect (sub-pixel) instead of scrollWidth/offsetWidth
+    // (both integer, each rounded independently). Dividing two independently
+    // rounded integers drifts by up to a full CSS px, and — because that
+    // rounding happens post browser-zoom — the drift direction changes with
+    // the page's zoom level, so the same layout can end up very slightly
+    // under- or over-scaled depending on whether the browser is at 100%,
+    // 110%, etc. Sub-pixel values are unaffected by that snapping.
+    const natural = inner.getBoundingClientRect().width
     if (natural === 0) return
-    const s = Math.round(Math.min(1, wrapper.offsetWidth / natural) * 1000) / 1000
+    // Floor (not round) so drift always errs toward slightly-too-small
+    // rather than slightly-too-large — an oversized keyboard overflows the
+    // wrapper, an undersized one just leaves a sliver of unused space.
+    const s = Math.floor(Math.min(1, wrapper.getBoundingClientRect().width / natural) * 1000) / 1000
     inner.style.zoom = String(s)
   }, [])
 

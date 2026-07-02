@@ -24,8 +24,13 @@ app.get("/health", (_req, res) => {
 app.use(notFoundMiddleware)
 app.use(errorMiddleware)
 
-app.listen(env.PORT, () => {
-  console.log(`API server running on http://localhost:${env.PORT}`)
-})
+// Vercel invokes the exported `app` directly per-request (see api/index.ts) —
+// it never runs this file's own server, so app.listen() would just bind an
+// unused port on every cold start. Skip it there.
+if (!process.env["VERCEL"]) {
+  app.listen(env.PORT, () => {
+    console.log(`API server running on http://localhost:${env.PORT}`)
+  })
+}
 
 export { app }
