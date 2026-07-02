@@ -1,0 +1,15 @@
+// Keyboard test session — one record per completed test.
+// visitorId (UUID from browser) prevents data cross-contamination between
+// concurrent users testing at the same time.
+
+model TestSession {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  visitorId   String?
+  failedKeys  String[]
+  maxRollover Int
+  avgLatency  Float
+  userAgent   String?
+  country     String?
+  ipHash      String?
+}

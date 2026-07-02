@@ -1,0 +1,24 @@
+// Admin-controlled global settings: AdSense toggle, ad client code,
+// and affiliate keyboard recommendation links.
+
+model GlobalConfig {
+  id             Int      @id @default(1)
+  isAdsEnabled   Boolean  @default(false)
+  adClientCode   String?
+  affiliateLinks Json     @default("[]")
+  updatedAt      DateTime @updatedAt
+}
+
+// Manually posted custom banner ads displayed in the frontend sidebar.
+model CustomAd {
+  id                 Int      @id @default(autoincrement())
+  title              String
+  imageUrl           String
+  cloudinaryPublicId String?
+  linkUrl            String
+  altText            String   @default("")
+  slot               String   @default("sidebar") // "sidebar" | "banner"
+  isActive           Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+}

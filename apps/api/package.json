@@ -1,0 +1,43 @@
+{
+  "name": "@workspace/api",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "prisma generate --schema=./prisma/schema",
+    "dev": "tsx watch src/index.ts",
+    "build": "prisma generate --schema=./prisma/schema && tsc --project tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate --schema=./prisma/schema",
+    "db:push": "prisma db push --schema=./prisma/schema",
+    "db:migrate": "prisma migrate dev --schema=./prisma/schema",
+    "db:studio": "prisma studio --schema=./prisma/schema",
+    "db:seed": "tsx src/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
+    "better-auth": "^1.2.8",
+    "cloudinary": "^2.10.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "multer": "^2.1.1",
+    "pg": "^8.20.0",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.3",
+    "@types/multer": "^2.1.0",
+    "@types/node": "^25.1.0",
+    "@types/pg": "^8.20.0",
+    "@workspace/eslint-config": "workspace:^",
+    "@workspace/typescript-config": "workspace:*",
+    "prisma": "^7.8.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.9.3"
+  }
+}
