@@ -2,11 +2,8 @@ import { KeyboardLayout } from "@/components/keyboard/keyboard-layout"
 import { CustomAdSidebar } from "@/components/ads/custom-ad-sidebar"
 import { CustomAdBanner } from "@/components/ads/custom-ad-banner"
 import { SponsorCta } from "@/components/ads/sponsor-cta"
-import { GoogleAd } from "@/components/ads/google-ad"
 import { SoundToggle } from "@/components/controls/sound-toggle"
 import type { CustomAd } from "@/types/admin"
-
-const ADSENSE_ID = process.env["NEXT_PUBLIC_ADSENSE_CLIENT_ID"] ?? ""
 
 interface CenterSectionProps {
   sponsorAds: CustomAd[]
@@ -34,11 +31,6 @@ export const CenterSection = ({ sponsorAds, bannerAds }: CenterSectionProps) => 
         </div>
         <KeyboardLayout />
       </div>
-
-      {/* Google AdSense — directly below the keyboard, above any custom
-          sponsor ad. Only rendered once a real client ID is configured, so
-          nothing shows before the account is set up. */}
-      {ADSENSE_ID && <GoogleAd isEnabled adClientCode={ADSENSE_ID} />}
 
       {hasBelow && (
         <div data-gsap="keyboard-extras" className="flex flex-col gap-3">

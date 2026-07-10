@@ -17,7 +17,6 @@ export const GoogleAd = ({
   format = "auto",
   className = "",
 }: GoogleAdProps) => {
-  const ref = useRef<HTMLDivElement>(null)
   const pushed = useRef(false)
 
   useEffect(() => {
@@ -36,30 +35,21 @@ export const GoogleAd = ({
     }
   }, [isEnabled, adClientCode])
 
+  // No wrapper box, no placeholder text — AdSense's own script collapses
+  // the <ins> tag to zero height when it has nothing to fill the slot
+  // with. Wrapping it in a bordered/min-height div (the old behavior)
+  // defeated that, leaving a visibly empty box whenever no ad filled.
+  if (!isEnabled || !adClientCode) return null
+
   return (
-    <div
-      ref={ref}
-      className={[
-        "min-h-[90px] flex items-center justify-center",
-        "rounded-lg border border-border bg-muted/30",
-        className,
-      ].join(" ")}
+    <ins
+      className={["adsbygoogle block", className].join(" ")}
+      data-ad-client={adClientCode}
+      data-ad-slot={slot}
+      data-ad-format={format}
+      data-full-width-responsive="true"
+      style={{ display: "block" }}
       aria-label="Advertisement"
-    >
-      {isEnabled && adClientCode ? (
-        <ins
-          className="adsbygoogle block"
-          data-ad-client={adClientCode}
-          data-ad-slot={slot}
-          data-ad-format={format}
-          data-full-width-responsive="true"
-          style={{ display: "block" }}
-        />
-      ) : (
-        <p className="text-[10px] text-muted-foreground font-mono">
-          Advertisement
-        </p>
-      )}
-    </div>
+    />
   )
 }
