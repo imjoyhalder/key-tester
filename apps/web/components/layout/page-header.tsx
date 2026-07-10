@@ -14,9 +14,11 @@ export const PageHeader = () => (
           priority
           className="w-9 h-9 shrink-0 select-none"
         />
-        <h1 className="text-sm sm:text-base font-bold font-mono tracking-tight leading-none truncate">
+        {/* Brand mark, not a heading — the homepage's real <h1> lives in
+            CenterSection, describing the page rather than the site name. */}
+        <span className="text-sm sm:text-base font-bold font-mono tracking-tight leading-none truncate">
           KEYTESTER.IO
-        </h1>
+        </span>
       </Link>
       <ThemeToggle />
     </div>

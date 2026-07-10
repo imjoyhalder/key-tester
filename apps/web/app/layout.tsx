@@ -117,6 +117,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "KeyTester.io",
+  alternateName: ["Keyboard Tester", "Keyboard Checker", "Online Keyboard Checker"],
   url: APP_URL,
   description:
     "Free online keyboard tester. Press every key and instantly verify which keys work, test N-Key Rollover, and measure input latency — no download required.",

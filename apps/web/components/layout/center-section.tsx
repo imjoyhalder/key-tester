@@ -23,9 +23,13 @@ export const CenterSection = ({ sponsorAds, bannerAds }: CenterSectionProps) => 
         {/* Card header — sound toggle sits right by the keyboard so it's within
             easy reach while testing */}
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-            Keyboard Tester
-          </p>
+          {/* The page's real <h1> — describes what the tool does, not the
+              brand name, so Google has something to match "keyboard
+              tester" / "keyboard checker" searches against. Visual size
+              is unchanged; only the semantics and text changed. */}
+          <h1 className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
+            Free Online Keyboard Tester &amp; Key Checker
+          </h1>
           <SoundToggle />
         </div>
         <KeyboardLayout />
