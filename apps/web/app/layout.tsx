@@ -138,12 +138,6 @@ const jsonLd = {
     "No sign-up required",
   ],
   screenshot: `${APP_URL}/og-image.png`,
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    ratingCount: "1200",
-    bestRating: "5",
-  },
 }
 
 export default function RootLayout({
