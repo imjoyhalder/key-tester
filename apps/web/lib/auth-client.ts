@@ -2,11 +2,11 @@
 
 import { createAuthClient } from "better-auth/react"
 
-const API_URL =
-  process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000"
-
+// Relative, same-origin path — proxied to the API by next.config.mjs's
+// rewrites() so the session cookie lands on this app's own domain instead
+// of the API's (see next.config.mjs for why that matters).
 export const authClient = createAuthClient({
-  baseURL: `${API_URL}/api/auth`,
+  baseURL: "/api/auth",
 })
 
 export const { signIn, signOut, signUp, useSession } = authClient

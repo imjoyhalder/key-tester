@@ -1,6 +1,6 @@
-const API_URL =
-  process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000"
-
+// Relative, same-origin path — proxied to the API by next.config.mjs's
+// rewrites() so the session cookie sent with these requests is this app's
+// own domain's cookie, not a cross-domain one the browser would drop.
 export class ApiClientError extends Error {
   readonly statusCode: number
   constructor(message: string, statusCode: number) {
@@ -14,7 +14,7 @@ const request = async <T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> => {
-  const res = await fetch(`${API_URL}/api${path}`, {
+  const res = await fetch(`/api${path}`, {
     ...options,
     credentials: "include",
     headers: {
@@ -56,7 +56,7 @@ export const apiDelete = <T>(path: string): Promise<T> =>
 export const apiUpload = async <T>(path: string, file: File): Promise<T> => {
   const form = new FormData()
   form.append("file", file)
-  const res = await fetch(`${API_URL}/api${path}`, {
+  const res = await fetch(`/api${path}`, {
     method: "POST",
     credentials: "include",
     body: form,

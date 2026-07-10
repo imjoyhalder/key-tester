@@ -56,6 +56,17 @@ const nextConfig = {
       },
     ]
   },
+  // Proxy API calls through this app's own origin so the auth session cookie
+  // (set on the response to these requests) is scoped to this domain instead
+  // of the API's — the web app and API are on different vercel.app
+  // subdomains with no shared parent domain, so a cross-domain cookie can
+  // never be read by this app's own middleware. Real routes under /api
+  // (e.g. /api/revalidate) are checked first and take priority over this.
+  async rewrites() {
+    return [
+      { source: "/api/:path*", destination: `${API_URL}/api/:path*` },
+    ]
+  },
 }
 
 export default nextConfig
