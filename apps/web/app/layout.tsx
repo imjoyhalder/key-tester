@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import { Geist, JetBrains_Mono } from "next/font/google"
 
 import "@workspace/ui/globals.css"
+import { Analytics } from "@vercel/analytics/next"
 import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 import { cn } from "@workspace/ui/lib/utils"
@@ -32,6 +33,7 @@ const fontMono = JetBrains_Mono({
 
 const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io"
 const ADSENSE_ID = process.env["NEXT_PUBLIC_ADSENSE_CLIENT_ID"] ?? ""
+const GA_MEASUREMENT_ID = process.env["NEXT_PUBLIC_GA_MEASUREMENT_ID"] ?? ""
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -171,6 +173,21 @@ export default function RootLayout({
             crossOrigin="anonymous"
           />
         )}
+        {GA_MEASUREMENT_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`} />
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_MEASUREMENT_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
       </head>
       <body>
         <ThemeProvider>
@@ -179,6 +196,7 @@ export default function RootLayout({
             {children}
           </TooltipProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )

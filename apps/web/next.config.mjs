@@ -12,6 +12,8 @@ const scriptSrc = [
   "https://www.googletagservices.com",
   "https://partner.googleadservices.com",
   "https://adservice.google.com",
+  "https://www.googletagmanager.com",
+  "https://va.vercel-scripts.com",
 ].filter(Boolean).join(" ")
 
 const CSP = [
@@ -20,7 +22,7 @@ const CSP = [
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
   `img-src 'self' data: https: blob:`,
-  `connect-src 'self' ${API_URL} ws://localhost:* wss://localhost:*`,
+  `connect-src 'self' ${API_URL} ws://localhost:* wss://localhost:* https://www.google-analytics.com https://vitals.vercel-insights.com`,
   `frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com`,
   `object-src 'none'`,
   `base-uri 'self'`,
