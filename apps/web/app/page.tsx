@@ -7,7 +7,6 @@ import { RightSidebar } from "@/components/layout/right-sidebar"
 import type { CustomAd } from "@/types/admin"
 
 const API_URL = process.env["NEXT_PUBLIC_API_URL"] ?? "http://localhost:4000"
-const ADSENSE_ID = process.env["NEXT_PUBLIC_ADSENSE_CLIENT_ID"] ?? ""
 
 const getActiveAds = async (slot: string): Promise<CustomAd[]> => {
   try {
@@ -34,9 +33,9 @@ export default async function HomePage() {
       <PageHeader />
 
       <main className="flex-1 max-w-6xl 2xl:max-w-400 mx-auto px-4 py-4">
-        <div className={`grid grid-cols-1 gap-4 ${rightAds.length > 0 || ADSENSE_ID ? "xl:grid-cols-[1fr_230px]" : ""}`}>
+        <div className={`grid grid-cols-1 gap-4 ${rightAds.length > 0 ? "xl:grid-cols-[1fr_230px]" : ""}`}>
           <CenterSection sponsorAds={leftAds} bannerAds={bannerAds} />
-          {(rightAds.length > 0 || ADSENSE_ID) && <RightSidebar ads={rightAds} />}
+          {rightAds.length > 0 && <RightSidebar ads={rightAds} />}
         </div>
       </main>
 
