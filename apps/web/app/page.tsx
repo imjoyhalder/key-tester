@@ -29,13 +29,13 @@ export default async function HomePage() {
   ])
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <PageHeader />
 
-      <main className="max-w-6xl mx-auto px-4 py-4">
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_230px] gap-4">
+      <main className="flex-1 max-w-6xl 2xl:max-w-400 mx-auto px-4 py-4">
+        <div className={`grid grid-cols-1 gap-4 ${rightAds.length > 0 ? "xl:grid-cols-[1fr_230px]" : ""}`}>
           <CenterSection sponsorAds={leftAds} bannerAds={bannerAds} />
-          <RightSidebar ads={rightAds} />
+          {rightAds.length > 0 && <RightSidebar ads={rightAds} />}
         </div>
       </main>
 

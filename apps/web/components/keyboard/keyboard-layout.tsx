@@ -127,10 +127,14 @@ export const KeyboardLayout = () => {
     // 110%, etc. Sub-pixel values are unaffected by that snapping.
     const natural = inner.getBoundingClientRect().width
     if (natural === 0) return
-    // Floor (not round) so drift always errs toward slightly-too-small
-    // rather than slightly-too-large — an oversized keyboard overflows the
-    // wrapper, an undersized one just leaves a sliver of unused space.
-    const s = Math.floor(Math.min(1, wrapper.getBoundingClientRect().width / natural) * 1000) / 1000
+    // Scale both up and down to fill the wrapper — capping at 1 meant the
+    // keyboard stayed at its natural (~900px) size on wide screens, leaving
+    // the rest of the card empty. MAX_SCALE is just a sanity ceiling (the
+    // page's own max-w-6xl already keeps the wrapper from growing without
+    // bound); floor (not round) so any drift errs toward slightly-too-small
+    // rather than overflowing the wrapper.
+    const MAX_SCALE = 1.6
+    const s = Math.floor(Math.min(MAX_SCALE, wrapper.getBoundingClientRect().width / natural) * 1000) / 1000
     inner.style.zoom = String(s)
   }, [])
 
