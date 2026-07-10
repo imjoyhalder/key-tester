@@ -74,7 +74,8 @@ The tester is **always on**: the moment the page loads, every keypress is captur
                     │  • SSR keyboard tester  │
                     │  • Admin UI (/admin)    │
                     └───────────┬────────────┘
-                                │  fetch (credentials: include)
+                                │  fetch("/api/...")  — same-origin
+                                │  rewrites() proxies to the API
                                 ▼
                     ┌────────────────────────┐
                     │  apps/api (Express)     │  :4000
@@ -91,8 +92,8 @@ The tester is **always on**: the moment the page loads, every keypress is captur
    Ad images ──► Cloudinary CDN ──► optimized via next/image
 ```
 
-- The web app talks to the API cross-origin with cookies (`credentials: "include"`); CORS on the API allows the configured `WEB_URL`.
-- Route protection for `/admin` and `/dashboard` is enforced by Next.js middleware ([`apps/web/proxy.ts`](apps/web/proxy.ts)) via the better-auth session cookie, and again server-side on every admin API route.
+- **Browser-side API calls are proxied through the web app's own origin**, not called cross-origin directly. `apps/web/next.config.mjs`'s `rewrites()` forwards `/api/*` to the API (`NEXT_PUBLIC_API_URL`), and the auth client / `lib/api.ts` fetch relative paths (`/api/auth`, `/api/ads`, …). This matters because the web and API deployments live on different domains with no shared parent domain — a cookie set by a truly cross-origin response is invisible to the web app's own middleware no matter what `SameSite` value it has, so without the proxy, login sessions never stick. Server components that talk to the API directly (e.g. `app/page.tsx`'s ad fetch, `app/(admin)/admin/layout.tsx`'s session check) call `NEXT_PUBLIC_API_URL` directly since that's a server-to-server call, unaffected by browser cookie scoping.
+- Route protection for `/admin` and `/dashboard` is enforced by Next.js middleware ([`apps/web/proxy.ts`](apps/web/proxy.ts)) via the better-auth session cookie (now scoped to the web app's own domain via the proxy above), and again server-side on every admin API route.
 - Ad creatives are served through Cloudinary and rendered with `next/image` (the Cloudinary host is allow-listed in `next.config.mjs`).
 
 ## Project Structure
@@ -281,9 +282,19 @@ All admin routes require a valid better-auth session **and** the `admin` role.
 
 ## Deployment
 
-- **Frontend** — deploy `apps/web` to any Next.js host (e.g. Vercel). Set `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_APP_URL` to the production URLs.
-- **API** — deploy `apps/api` to any Node host. `pnpm --filter @workspace/api build` compiles to `dist/` and generates the Prisma client; run with `pnpm --filter @workspace/api start`. Apply the schema with `db:push` (or migrations) against the production database, then run `db:seed` once.
-- Set `BETTER_AUTH_URL` and `WEB_URL` to the real origins so auth cookies and CORS work across domains.
+Both apps are currently deployed as **separate Vercel projects** (each with its own `*.vercel.app` domain, no shared parent domain).
+
+- **Frontend** (`apps/web`) — standard Next.js Vercel project. Set `NEXT_PUBLIC_API_URL` / `NEXT_PUBLIC_APP_URL` to the production URLs.
+- **API** (`apps/api`) — Express doesn't run natively on Vercel's serverless model (no `app.listen()`), so it's adapted:
+  - `apps/api/api/index.ts` re-exports the Express `app` as the default export — Vercel's documented pattern for deploying Express apps as a single Serverless Function.
+  - `apps/api/vercel.json` rewrites every path to that function; Express's own router does the real routing.
+  - `apps/api/src/index.ts` guards `app.listen()` behind `!process.env.VERCEL` so the same file still works unmodified on a traditional Node host.
+  - `apps/api/src/index.ts` also exports `app` as a **default** export (in addition to the named export) — without it, Vercel's function invoker rejects the module and every route 500s with `FUNCTION_INVOCATION_FAILED`.
+- **Required env vars on the API's Vercel project** — these have safe-looking `localhost` defaults in `env.ts`, so a missing var doesn't fail the build, it just silently misconfigures production: `WEB_URL`, `BETTER_AUTH_URL`, `CLOUDINARY_CLOUD_NAME`/`CLOUDINARY_API_KEY`/`CLOUDINARY_API_SECRET`, `REVALIDATE_SECRET`.
+- **Turborepo + Vercel env vars** — any env var read at build time (`NEXT_PUBLIC_*`, or anything the `build` task depends on) must be listed in the root [`turbo.json`](turbo.json)'s `globalEnv`, or Turborepo may not pass it through to the build step / invalidate the cache correctly.
+- Because the web and API are on different domains, browser-side requests go through the same-origin proxy described in [Architecture](#architecture) rather than calling the API cross-origin directly — this is what makes cookie-based admin login work at all under this setup.
+
+If you'd rather run the API on a traditional always-on Node host (Render, Railway, Fly.io, a VPS) instead of Vercel, none of the above adapter files get in the way: `pnpm --filter @workspace/api build && pnpm --filter @workspace/api start` works as a normal server. You'd then also want to point `NEXT_PUBLIC_API_URL` at that host and could simplify/remove the `rewrites()` proxy if the host supports a custom domain that shares a parent domain with the frontend (enabling simpler cross-subdomain cookies instead).
 
 ## Working with the UI Library
 
