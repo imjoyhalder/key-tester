@@ -42,11 +42,20 @@ The tester is **always on**: the moment the page loads, every keypress is captur
 - **Real-time key detection** — every keypress lights up instantly with `pressed → verified` (green) or `failed` (red) status.
 - **Always-on** — no "start" step; testing begins as soon as the page loads.
 - **Full-size ANSI layout** — 104-key layout with function row, navigation cluster, arrows, and numpad.
-- **N-Key Rollover (NKRO) test** — hold multiple keys at once to verify how many simultaneous presses your keyboard reports.
+- **N-Key Rollover (NKRO) / ghosting detection** — hold multiple keys at once to verify how many simultaneous presses your keyboard reports.
 - **Input-latency measurement** — per-key press-to-release latency with a running average.
-- **Optional key sound** — toggleable click feedback (Web Audio, zero assets).
-- **Responsive & themed** — flash-free light/dark mode and a keyboard that scales to its container.
-- **SEO-ready** — server-rendered markup, JSON-LD, sitemap, and robots.
+- **Toggleable key sound** — synthesized mechanical-switch click feedback (Web Audio, zero assets), switched on/off from the header.
+- **Responsive & themed** — flash-free light/dark mode (with a "D" hotkey) and a keyboard that auto-scales to its container.
+- **Sponsor CTA** — a contextual call-to-action that appears after a failed key or an engaged test session.
+- **SEO-ready** — OpenGraph/Twitter metadata, JSON-LD structured data, sitemap, and robots.txt.
+
+**Ads & monetization**
+- **Custom sponsor ads** — Cloudinary-hosted creatives served in the sidebar-left, sidebar, and banner placements, managed from the admin dashboard.
+- **Google AdSense (Auto ads)** — activates automatically when `NEXT_PUBLIC_ADSENSE_CLIENT_ID` is set; no manually placed ad units.
+
+**Analytics**
+- **Vercel Web Analytics** — always on, cookie-free visitor/pageview tracking.
+- **Google Analytics 4** — optional, activates when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is set.
 
 **Admin dashboard (authenticated)**
 - **Key Health** — average/percentile latency and a most-failed-keys leaderboard.
@@ -59,11 +68,15 @@ The tester is **always on**: the moment the page loads, every keypress is captur
 | Frontend | Next.js 16 (App Router, Turbopack), React 19, TypeScript |
 | Styling | Tailwind CSS 4, shadcn/ui (`packages/ui`) |
 | State | Zustand |
-| Animation | GSAP (lazy-loaded, kept out of the critical bundle) |
-| Backend | Express 5, TypeScript (ESM) |
+| Animation | GSAP |
+| Icons | Lucide, Phosphor Icons |
+| Theming | next-themes |
+| Backend | Express 5, TypeScript (ESM), Zod |
 | Database | PostgreSQL via Prisma 7 (`@prisma/adapter-pg`) |
 | Auth | better-auth (email/password + admin role) |
-| Media | Cloudinary (ad image uploads) |
+| Media | Cloudinary (ad image uploads via Multer) |
+| Ads | Google AdSense (Auto ads) |
+| Analytics | Vercel Web Analytics, Google Analytics 4 (optional) |
 | Tooling | Turborepo + pnpm workspaces, ESLint, Prettier |
 
 ## Architecture
@@ -199,6 +212,7 @@ pnpm --filter @workspace/api dev # backend only
 | `NEXT_PUBLIC_API_URL` | ✅ | URL of the API (default `http://localhost:4000`) |
 | `NEXT_PUBLIC_APP_URL` | ✅ | Public URL of the frontend — used in sitemap & OG tags |
 | `NEXT_PUBLIC_ADSENSE_CLIENT_ID` | — | Google AdSense publisher ID (`ca-pub-…`) |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | — | Google Analytics 4 Measurement ID (`G-…`) |
 
 ## Scripts
 
