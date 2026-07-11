@@ -22,8 +22,8 @@ const CSP = [
   `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com`,
   `font-src 'self' https://fonts.gstatic.com`,
   `img-src 'self' data: https: blob:`,
-  `connect-src 'self' ${API_URL} ws://localhost:* wss://localhost:* https://www.google-analytics.com https://vitals.vercel-insights.com`,
-  `frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com`,
+  `connect-src 'self' ${API_URL} ws://localhost:* wss://localhost:* https://www.google-analytics.com https://vitals.vercel-insights.com https://*.adtrafficquality.google`,
+  `frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.adtrafficquality.google`,
   `object-src 'none'`,
   `base-uri 'self'`,
 ].join("; ")
