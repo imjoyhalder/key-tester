@@ -20,6 +20,7 @@ export const PageFooter = () => (
         </span>
       </div>
       <div className="flex items-center gap-4">
+        <Link href="/blog" className={linkCls}>Blog</Link>
         <Link href="/privacy" className={linkCls}>Privacy Policy</Link>
         <Link href="/terms" className={linkCls}>Terms of Service</Link>
       </div>
