@@ -26,15 +26,15 @@ export const blogPosts: BlogPost[] = [
     slug: "keyboard-ghosting-explained",
     title: "What Is Keyboard Ghosting? Causes and How to Test for It",
     description:
-      "Why some key combinations silently fail to register, what \"ghosting\" actually means, and how to check whether your keyboard suffers from it.",
+      'Why some key combinations silently fail to register, what "ghosting" actually means, and how to check whether your keyboard suffers from it.',
     date: "2026-07-15",
   },
   {
     slug: "keyboard-latency-test",
-    title: "How to Test Keyboard Input Latency (and What Counts as Good)",
+    title: "Keyboard Latency: What a Browser Test Can Actually Measure",
     description:
-      "What keyboard input latency actually measures, typical numbers for membrane vs. mechanical keyboards, and how to test yours for free.",
-    date: "2026-07-15",
+      "Understand the difference between key-hold duration and input latency, what browser tests can show, and how to investigate delayed typing.",
+    date: "2026-09-15",
   },
 ]
 

@@ -68,7 +68,7 @@ const initialState: KeyboardState = {
   currentlyPressed: new Set(),
   avgLatency: 0,
   allLatencies: [],
-  soundProfile: "blue",
+  soundProfile: "off",
   volume: 0.5,
   layout: "ansi",
   inputHistory: [],
@@ -100,6 +100,7 @@ export const useKeyboardStore = create<KeyboardStore>((set, get) => ({
   },
 
   pressKey: (code: string, label: string, timestamp: number) => {
+    if (!get().isRunning || get().currentlyPressed.has(code)) return
     set((state) => {
       if (!state.isRunning) return state
 
@@ -131,11 +132,6 @@ export const useKeyboardStore = create<KeyboardStore>((set, get) => ({
       }
     })
 
-    const startTime = performance.now()
-    const releaseCallback = () => {
-      get().releaseKey(code, startTime)
-    }
-
     const newHistory = [
       { code, label, latency: 0, timestamp },
       ...get().inputHistory,
@@ -151,7 +147,7 @@ export const useKeyboardStore = create<KeyboardStore>((set, get) => ({
       if (!state.isRunning) return state
 
       const existingKey = state.keys[code]
-      if (!existingKey) return state
+      if (!existingKey || !state.currentlyPressed.has(code)) return state
 
       const newPressed = new Set(state.currentlyPressed)
       newPressed.delete(code)
@@ -173,9 +169,7 @@ export const useKeyboardStore = create<KeyboardStore>((set, get) => ({
       ].slice(-20)
 
       const newHistory = state.inputHistory.map((item) =>
-        item.code === code && item.latency === 0
-          ? { ...item, latency }
-          : item
+        item.code === code && item.latency === 0 ? { ...item, latency } : item
       )
 
       const updatedKeys = {

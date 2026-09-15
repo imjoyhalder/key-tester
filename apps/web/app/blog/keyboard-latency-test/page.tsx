@@ -4,11 +4,9 @@ import { BlogPostLayout } from "@/components/blog/blog-post-layout"
 import { getBlogPost } from "@/lib/blog-posts"
 
 const post = getBlogPost("keyboard-latency-test")!
-
 export const metadata: Metadata = {
   title: post.title,
   description: post.description,
-  robots: { index: true, follow: true },
   alternates: { canonical: "/blog/keyboard-latency-test" },
 }
 
@@ -16,60 +14,59 @@ export default function KeyboardLatencyTestPost() {
   return (
     <BlogPostLayout post={post}>
       <p>
-        Keyboard input latency is the time between physically pressing a key and your computer
-        actually registering that press. It&apos;s measured in milliseconds, and while it sounds
-        like a tiny number to obsess over, it&apos;s the same category of delay that makes a
-        gaming mouse feel more &ldquo;connected&rdquo; than a cheap one — it&apos;s not about whether you can
-        consciously perceive a single keystroke&apos;s delay, it&apos;s about consistency under load.
+        Keyboard latency is the delay between a physical key actuation and the
+        resulting input being received or displayed. The measurement depends on
+        where you start and stop the timer. A browser cannot observe the exact
+        moment your physical switch actuates.
       </p>
-
-      <h2>What actually causes the delay</h2>
-      <p>A key press goes through several stages before your computer sees it, including:</p>
+      <h2>Key-hold duration is not input latency</h2>
+      <p>
+        The time between a keydown event and a keyup event measures how long the
+        browser sees a key held down. It mainly reflects your finger movement.
+        Averaging that time does not turn it into a measurement of keyboard
+        hardware latency.
+      </p>
+      <p>
+        KeyTester.io shows which key events reach your browser. It does not
+        provide a hardware latency score, and a green key means an event
+        registered—not that its response time meets a performance standard.
+      </p>
+      <h2>What a browser test can tell you</h2>
       <ul>
-        <li>The physical switch actuating and the debounce delay that filters out electrical noise</li>
-        <li>The keyboard&apos;s internal scan rate — how often its controller checks for pressed keys</li>
-        <li>USB polling rate — how often the keyboard reports its state to the computer</li>
-        <li>Whatever the operating system and the app in focus do with that input</li>
+        <li>Whether a key press reaches the page.</li>
+        <li>Whether several keys register together.</li>
+        <li>Whether a key appears to remain held until release.</li>
       </ul>
       <p>
-        Each stage adds a small amount of time, and they stack. A wireless keyboard on a slow
-        connection or a cheap USB polling rate can add noticeably more latency than a wired
-        mechanical keyboard with a fast scan rate.
+        Operating-system shortcuts, browser focus, and software can affect these
+        observations. Repeat a suspicious result in another application before
+        treating it as a keyboard fault.
       </p>
-
-      <h2>What counts as good vs. bad</h2>
+      <h2>How hardware latency is measured</h2>
       <p>
-        Rough figures to calibrate against: a responsive mechanical keyboard typically lands
-        somewhere around 5–15ms of input latency. Membrane keyboards and budget wireless boards
-        are commonly in the 20–40ms range. Above that, on a mainstream board, something is
-        usually working against you — an outdated driver, a laggy wireless connection, or a very
-        old debounce implementation.
+        A hardware test needs an independent reference for actuation and a
+        defined end point, such as an electrical output or a visible screen
+        response. Dedicated measurement equipment or a carefully controlled
+        high-speed-camera setup can provide those references. Compare results
+        only when the methods and end points match.
       </p>
+      <h2>If typing feels delayed</h2>
       <p>
-        These numbers matter far more in competitive gaming than in everyday typing — nobody
-        notices 20ms while writing a document, but it&apos;s a real, measurable difference in a
-        game where reaction time itself is being measured in a similar range.
-      </p>
-
-      <h2>How to measure it yourself</h2>
-      <p>
-        The simplest self-test is a press-to-release timer: press a key, release it, and measure
-        the time between the two events across a running average rather than a single press,
-        since any individual keystroke can be thrown off by normal human timing variance. Doing
-        this for a dozen or more keys gives a much more reliable picture than one measurement.
+        Try the same keyboard in a simple text editor, close demanding
+        background applications, and check its connection and battery. Compare
+        another port or connection mode if available. Change one thing at a time
+        so you can identify what affects the result.
       </p>
       <p>
-        <Link href="/">Measure your keyboard&apos;s latency now →</Link>
+        <Link href="/">Check which keys register in your browser →</Link>
       </p>
-
-      <h2>If your numbers look worse than expected</h2>
+      <h2>Event documentation</h2>
       <p>
-        Before assuming the keyboard itself is slow, rule out the easy culprits: a wireless
-        dongle plugged into a rear USB port instead of one near you, a USB hub adding overhead,
-        or background software polling the keyboard for hotkeys. Wired, direct-to-motherboard
-        connections consistently test faster than wireless or hubbed setups, so that&apos;s the
-        first thing worth changing if latency is higher than you&apos;d expect for the hardware
-        you own.
+        The browser events used for key detection are documented in the{" "}
+        <a href="https://www.w3.org/TR/uievents/#events-keyboardevents">
+          W3C UI Events specification
+        </a>
+        .
       </p>
     </BlogPostLayout>
   )
