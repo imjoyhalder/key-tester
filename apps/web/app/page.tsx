@@ -1,3 +1,6 @@
+import type { Metadata } from "next"
+import { KeyboardHelp } from "@/components/keyboard/keyboard-help"
+export const metadata: Metadata = { alternates: { canonical: "/" } }
 export const revalidate = 60
 
 import { PageHeader } from "@/components/layout/page-header"
@@ -29,14 +32,34 @@ export default async function HomePage() {
   ])
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            name: "KeyTester.io",
+            url: process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io",
+            applicationCategory: "UtilitiesApplication",
+            operatingSystem: "Any",
+            browserRequirements: "Requires JavaScript and a physical keyboard",
+            description:
+              "A free browser-based keyboard tester with visual feedback for received key presses.",
+            offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+          }).replace(/</g, "\\u003c"),
+        }}
+      />
       <PageHeader />
 
-      <main className="flex-1 max-w-6xl 2xl:max-w-400 mx-auto px-4 py-4">
-        <div className={`grid grid-cols-1 gap-4 ${rightAds.length > 0 ? "xl:grid-cols-[1fr_230px]" : ""}`}>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-4 2xl:max-w-400">
+        <div
+          className={`grid grid-cols-1 gap-4 ${rightAds.length > 0 ? "xl:grid-cols-[1fr_230px]" : ""}`}
+        >
           <CenterSection sponsorAds={leftAds} bannerAds={bannerAds} />
           {rightAds.length > 0 && <RightSidebar ads={rightAds} />}
         </div>
+        <KeyboardHelp />
       </main>
 
       <PageFooter />

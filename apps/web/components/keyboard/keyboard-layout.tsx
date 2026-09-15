@@ -5,11 +5,13 @@ import { useEffect, useCallback, useRef, useLayoutEffect } from "react"
 // useLayoutEffect on the client, useEffect on the server. The keyboard is now
 // server-rendered (static, fast first paint), and plain useLayoutEffect would
 // log "useLayoutEffect does nothing on the server" during SSR.
-const useIsomorphicLayoutEffect = typeof window !== "undefined" ? useLayoutEffect : useEffect
+const useIsomorphicLayoutEffect =
+  typeof window !== "undefined" ? useLayoutEffect : useEffect
 import { useKeyboardStore } from "@/stores/keyboard-store"
 import { ANSI_LAYOUT, isGap, KEY_LABEL_MAP } from "./ansi-layout"
 import type { KeyDef, RowItem, KeyboardSection } from "./ansi-layout"
 import { ISO_LAYOUT } from "./iso-layout"
+import styles from "./keyboard.module.css"
 import { KeyCap, KEY_UNIT, KEY_GAP } from "./key-cap"
 import type { KeyState } from "@/stores/keyboard-store"
 
@@ -76,7 +78,10 @@ const RowRenderer = ({
         return (
           <div
             key={`gap-${i}`}
-            style={{ width: Math.round(item.width * (KEY_UNIT + KEY_GAP)), flexShrink: 0 }}
+            style={{
+              width: Math.round(item.width * (KEY_UNIT + KEY_GAP)),
+              flexShrink: 0,
+            }}
           />
         )
       }
@@ -134,12 +139,20 @@ export const KeyboardLayout = () => {
     // bound); floor (not round) so any drift errs toward slightly-too-small
     // rather than overflowing the wrapper.
     const MAX_SCALE = 1.6
-    const s = Math.floor(Math.min(MAX_SCALE, wrapper.getBoundingClientRect().width / natural) * 1000) / 1000
+    const s =
+      Math.floor(
+        Math.min(
+          MAX_SCALE,
+          Math.max(760, wrapper.getBoundingClientRect().width) / natural
+        ) * 1000
+      ) / 1000
     inner.style.zoom = String(s)
   }, [])
 
   // Runs synchronously before paint on the client — safe to read layout here.
-  useIsomorphicLayoutEffect(() => { applyScale() }, [applyScale])
+  useIsomorphicLayoutEffect(() => {
+    applyScale()
+  }, [applyScale])
 
   useEffect(() => {
     // ResizeObserver fires after paint; wrap in rAF to batch the read/write
@@ -150,8 +163,15 @@ export const KeyboardLayout = () => {
       rafId = requestAnimationFrame(applyScale)
     })
     if (wrapperRef.current) obs.observe(wrapperRef.current)
-    return () => { obs.disconnect(); cancelAnimationFrame(rafId) }
+    return () => {
+      obs.disconnect()
+      cancelAnimationFrame(rafId)
+    }
   }, [applyScale])
+
+  useEffect(() => {
+    if (Object.keys(keys).length === 0) pressTimestamps.current.clear()
+  }, [keys])
 
   const handlePress = useCallback(
     (code: string) => {
@@ -161,24 +181,16 @@ export const KeyboardLayout = () => {
         pressTimestamps.current.set(code, start)
         pressKey(code, KEY_LABEL_MAP[code] ?? code, Date.now())
         playSoundEffect(soundProfile, volume)
-        // F10 (menu bar), F11 (fullscreen), F12 (DevTools), Win key — the browser/OS
-        // swallows the keyup event so it never reaches JavaScript. Auto-release after
-        // 1.2 s if keyup hasn't fired, so the key still counts as verified.
-        setTimeout(() => {
-          if (pressTimestamps.current.has(code)) {
-            pressTimestamps.current.delete(code)
-            releaseKey(code, start)
-          }
-        }, 1200)
       }
     },
-    [isRunning, pressKey, releaseKey, soundProfile, volume]
+    [isRunning, pressKey, soundProfile, volume]
   )
 
   const handleRelease = useCallback(
     (code: string) => {
       if (!isRunning) return
-      const start = pressTimestamps.current.get(code) ?? performance.now()
+      const start = pressTimestamps.current.get(code)
+      if (start === undefined) return
       pressTimestamps.current.delete(code)
       releaseKey(code, start)
     },
@@ -187,6 +199,30 @@ export const KeyboardLayout = () => {
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
+      if (
+        e.target instanceof Element &&
+        e.target.closest("input, textarea, select, [contenteditable=true]")
+      )
+        return
+      // Keep navigation and control activation usable while testing letters.
+      if (e.code === "Tab") {
+        if (!e.repeat) handlePress(e.code)
+        return
+      }
+      if (
+        e.target instanceof Element &&
+        e.target.closest("button, a, summary") &&
+        [
+          "Enter",
+          "Space",
+          "Escape",
+          "ArrowUp",
+          "ArrowDown",
+          "ArrowLeft",
+          "ArrowRight",
+        ].includes(e.code)
+      )
+        return
       // capture phase + stopPropagation prevents browser built-ins:
       // F1 (help), F3 (find), F5 (refresh), F11 (fullscreen), CapsLock toggle, etc.
       // Note: MetaLeft/MetaRight (Windows key) is OS-level and cannot be blocked by browsers.
@@ -195,6 +231,7 @@ export const KeyboardLayout = () => {
       if (!e.repeat) handlePress(e.code)
     }
     const up = (e: KeyboardEvent) => {
+      if (!pressTimestamps.current.has(e.code)) return
       e.preventDefault()
       e.stopPropagation()
       handleRelease(e.code)
@@ -203,13 +240,15 @@ export const KeyboardLayout = () => {
     // • blur: window loses focus to another app
     // • focus: window regains focus after F10 menu bar or F11 fullscreen (keyup missed)
     // • visibilitychange: tab hidden/shown
-    // The per-key 1.2 s timeout in handlePress is the final safety net.
+    // Held keys remain pressed until keyup or loss of page focus.
     const releaseAll = () => {
       Array.from(pressTimestamps.current.keys()).forEach((code) => {
         handleRelease(code)
       })
     }
-    const onVisibility = () => { if (document.hidden) releaseAll() }
+    const onVisibility = () => {
+      if (document.hidden) releaseAll()
+    }
     window.addEventListener("keydown", down, { capture: true })
     window.addEventListener("keyup", up, { capture: true })
     window.addEventListener("blur", releaseAll)
@@ -224,7 +263,8 @@ export const KeyboardLayout = () => {
     }
   }, [handlePress, handleRelease])
 
-  const sections: KeyboardSection[] = layout === "iso" ? ISO_LAYOUT : ANSI_LAYOUT
+  const sections: KeyboardSection[] =
+    layout === "iso" ? ISO_LAYOUT : ANSI_LAYOUT
   const fnSection = sections[0]!
   const mainSection = sections[1]!
   const numpadSection = sections[2]!
@@ -232,27 +272,26 @@ export const KeyboardLayout = () => {
   const FN_ROW_HEIGHT = KEY_UNIT + 8
 
   return (
-    // overflow-x-clip contains the natural-width keyboard horizontally during
-    // the brief window between SSR paint and the client scale being applied
-    // (prevents a flash of horizontal overflow) WITHOUT clipping the keys'
-    // downward 3D drop-shadow at the bottom edge (overflow-y stays visible).
-    <div ref={wrapperRef} className="w-full overflow-x-clip">
-      <div
-        ref={innerRef}
-        className="inline-block"
-      >
-        <div className="inline-flex items-start" style={{ gap: 16 }}>
-
+    // Keep labels readable on small screens with horizontal scrolling.
+    <div ref={wrapperRef} className="w-full overflow-x-auto pb-4">
+      <div ref={innerRef} className={styles.case}>
+        <div
+          className={`${styles.plate} inline-flex items-start`}
+          style={{ gap: 16 }}
+        >
           {/* Left column: function row stacked above main block */}
           <div className="flex flex-col">
             {/* Function row */}
-            <div className="flex mb-2" style={{ gap: KEY_GAP }}>
+            <div className="mb-2 flex" style={{ gap: KEY_GAP }}>
               {fnSection.rows[0]!.map((item, i) => {
                 if (isGap(item)) {
                   return (
                     <div
                       key={`fn-gap-${i}`}
-                      style={{ width: Math.round(item.width * (KEY_UNIT + KEY_GAP)), flexShrink: 0 }}
+                      style={{
+                        width: Math.round(item.width * (KEY_UNIT + KEY_GAP)),
+                        flexShrink: 0,
+                      }}
                     />
                   )
                 }
@@ -270,11 +309,7 @@ export const KeyboardLayout = () => {
             {/* Main block */}
             <div className="flex flex-col" style={{ gap: KEY_GAP }}>
               {mainSection.rows.map((row, i) => (
-                <RowRenderer
-                  key={i}
-                  row={row}
-                  keyStates={keys}
-                />
+                <RowRenderer key={i} row={row} keyStates={keys} />
               ))}
             </div>
           </div>
@@ -285,14 +320,9 @@ export const KeyboardLayout = () => {
             style={{ gap: KEY_GAP, marginTop: FN_ROW_HEIGHT }}
           >
             {numpadSection.rows.map((row, i) => (
-              <RowRenderer
-                key={i}
-                row={row}
-                keyStates={keys}
-              />
+              <RowRenderer key={i} row={row} keyStates={keys} />
             ))}
           </div>
-
         </div>
       </div>
     </div>

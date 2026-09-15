@@ -1,3 +1,4 @@
+import { TestStatus } from "@/components/keyboard/test-status"
 import { KeyboardLayout } from "@/components/keyboard/keyboard-layout"
 import { CustomAdSidebar } from "@/components/ads/custom-ad-sidebar"
 import { CustomAdBanner } from "@/components/ads/custom-ad-banner"
@@ -10,26 +11,40 @@ interface CenterSectionProps {
   bannerAds: CustomAd[]
 }
 
-export const CenterSection = ({ sponsorAds, bannerAds }: CenterSectionProps) => {
+export const CenterSection = ({
+  sponsorAds,
+  bannerAds,
+}: CenterSectionProps) => {
   const ctaAd = sponsorAds[0] ?? bannerAds[0]
   const hasBelow = sponsorAds.length > 0 || bannerAds.length > 0
 
   return (
-    <div className="flex flex-col gap-3 min-w-0">
-      <div data-gsap="keyboard-card" className="bg-card border border-border rounded-xl px-4 pt-4 pb-6 shadow-sm">
-        {/* Card header — sound toggle sits right by the keyboard so it's within
-            easy reach while testing */}
-        <div className="flex items-center justify-between mb-3">
-          {/* The page's real <h1> — describes what the tool does, not the
-              brand name, so Google has something to match "keyboard
-              tester" / "keyboard checker" searches against. Visual size
-              is unchanged; only the semantics and text changed. */}
-          <h1 className="text-[10px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
-            Free Online Keyboard Tester &amp; Key Checker
-          </h1>
+    <div className="flex min-w-0 flex-col gap-3">
+      <div
+        data-gsap="keyboard-card"
+        className="rounded-xl border border-border bg-card px-4 pt-4 pb-6 shadow-sm"
+      >
+        <div className="mb-5 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-xl font-semibold tracking-tight sm:text-2xl">
+              Free online keyboard tester
+            </h1>
+            <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+              Press a key on your keyboard. See it light up instantly.
+            </p>
+          </div>
           <SoundToggle />
         </div>
+        <p className="mb-3 text-xs text-muted-foreground md:hidden">
+          Swipe across the keyboard to see every key. Use a physical keyboard to
+          test.
+        </p>
         <KeyboardLayout />
+        <TestStatus />
+        <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+          US QWERTY labels · Windows key = Command on Mac. Some system shortcuts
+          may open outside this page.
+        </p>
       </div>
 
       {hasBelow && (

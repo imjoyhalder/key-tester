@@ -27,7 +27,11 @@ export const ThemeToggle = () => {
         duration: 0.08,
         ease: "power3.in",
         onComplete: () =>
-          gsap.to(btnRef.current, { scale: 1, duration: 0.3, ease: "back.out(2.5)" }),
+          gsap.to(btnRef.current, {
+            scale: 1,
+            duration: 0.3,
+            ease: "back.out(2.5)",
+          }),
       })
     }
     // Read the current theme straight from the DOM class so the toggle works
@@ -43,15 +47,15 @@ export const ThemeToggle = () => {
       onClick={handleClick}
       aria-label="Toggle color theme"
       className={[
-        "flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-mono shrink-0",
-        "border border-border bg-card hover:bg-muted transition-colors",
+        "flex shrink-0 items-center gap-1.5 rounded-full px-2.5 py-1.5 text-sm sm:px-3",
+        "border border-border bg-card transition-colors hover:bg-muted",
       ].join(" ")}
     >
       <span ref={iconRef} className="inline-block leading-none">
         <span className="hidden dark:inline">🌙</span>
         <span className="inline dark:hidden">☀️</span>
       </span>
-      <span className="hidden sm:inline text-muted-foreground">
+      <span className="hidden text-muted-foreground sm:inline">
         <span className="hidden dark:inline">Dark</span>
         <span className="inline dark:hidden">Light</span>
       </span>

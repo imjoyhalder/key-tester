@@ -1,25 +1,32 @@
+import type { Metadata } from "next"
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 import Image from "next/image"
+import Link from "next/link"
 import { LoginForm } from "@/components/auth/login-form"
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
+        <div className="mb-8 text-center">
           <Image
-            src="/keyboard.png"
+            src="/logo.svg"
             alt="KeyTester.io logo"
             width={48}
             height={48}
             priority
-            className="w-12 h-12 rounded-xl mx-auto mb-3"
+            className="mx-auto mb-3 h-12 w-12 rounded-xl"
           />
-          <h1 className="text-lg font-bold font-mono">KeyTester Admin</h1>
-          <p className="text-sm text-muted-foreground font-mono">Sign in to access the dashboard</p>
+          <h1 className="font-mono text-lg font-bold">KeyTester Admin</h1>
+          <p className="font-mono text-sm text-muted-foreground">
+            Sign in to access the dashboard
+          </p>
         </div>
         <LoginForm />
-        <p className="text-center text-[11px] text-muted-foreground font-mono mt-4">
-          <a href="/" className="hover:text-foreground transition-colors">← Back to Keyboard Tester</a>
+        <p className="mt-4 text-center font-mono text-[11px] text-muted-foreground">
+          <Link href="/" className="transition-colors hover:text-foreground">
+            ← Back to Keyboard Tester
+          </Link>
         </p>
       </div>
     </div>

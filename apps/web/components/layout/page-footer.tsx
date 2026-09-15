@@ -1,29 +1,34 @@
-import Image from "next/image"
 import Link from "next/link"
-
-const linkCls =
-  "text-[12px] text-muted-foreground hover:text-foreground transition-colors font-mono"
+import { Brand } from "./brand"
 
 export const PageFooter = () => (
-  <footer data-gsap="footer" className="mt-8 border-t border-border bg-card/30">
-    <div className="max-w-6xl mx-auto px-4 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-      <div className="flex items-center gap-2">
-        <Image
-          src="/keyboard.png"
-          alt="KeyTester.io logo"
-          width={22}
-          height={22}
-          className="rounded-md"
-        />
-        <span className="text-[12px] text-muted-foreground font-mono">
-          © 2026 KeyTester.io
-        </span>
+  <footer data-gsap="footer" className="mt-12 border-t border-border">
+    <div className="mx-auto flex max-w-6xl flex-col justify-between gap-6 px-4 py-8 sm:flex-row sm:items-center">
+      <div>
+        <Link href="/" aria-label="KeyTester.io home">
+          <Brand compact />
+        </Link>
+        <p className="mt-3 text-sm text-muted-foreground">
+          Know every key works.
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          © {new Date().getFullYear()} KeyTester.io
+        </p>
       </div>
-      <div className="flex items-center gap-4">
-        <Link href="/blog" className={linkCls}>Blog</Link>
-        <Link href="/privacy" className={linkCls}>Privacy Policy</Link>
-        <Link href="/terms" className={linkCls}>Terms of Service</Link>
-      </div>
+      <nav
+        aria-label="Footer navigation"
+        className="flex flex-wrap gap-5 text-sm text-muted-foreground"
+      >
+        <Link href="/blog" className="hover:text-foreground">
+          Keyboard guides
+        </Link>
+        <Link href="/privacy" className="hover:text-foreground">
+          Privacy
+        </Link>
+        <Link href="/terms" className="hover:text-foreground">
+          Terms
+        </Link>
+      </nav>
     </div>
   </footer>
 )
