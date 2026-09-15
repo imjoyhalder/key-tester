@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/page-header"
 import { PageFooter } from "@/components/layout/page-footer"
 import type { BlogPost } from "@/lib/blog-posts"
 
-const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io"
+const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://key-tester-web.vercel.app"
 
 interface BlogPostLayoutProps {
   post: BlogPost

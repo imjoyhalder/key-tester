@@ -7,7 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { TooltipProvider } from "@workspace/ui/components/tooltip"
 
 
-const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io"
+const APP_URL = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://key-tester-web.vercel.app"
 const ADSENSE_ID = process.env["NEXT_PUBLIC_ADSENSE_CLIENT_ID"] ?? ""
 const GA_MEASUREMENT_ID = process.env["NEXT_PUBLIC_GA_MEASUREMENT_ID"] ?? ""
 

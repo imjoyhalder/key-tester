@@ -40,7 +40,7 @@ export default async function HomePage() {
             "@context": "https://schema.org",
             "@type": "WebApplication",
             name: "KeyTester.io",
-            url: process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io",
+            url: process.env["NEXT_PUBLIC_APP_URL"] ?? "https://key-tester-web.vercel.app",
             applicationCategory: "UtilitiesApplication",
             operatingSystem: "Any",
             browserRequirements: "Requires JavaScript and a physical keyboard",

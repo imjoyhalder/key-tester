@@ -12,7 +12,7 @@
 
 ## Before public launch
 
-1. Deploy this branch after review. Set NEXT_PUBLIC_APP_URL to the final HTTPS domain. Redirect other domain variants to it.
+1. Deploy this branch after review. Set NEXT_PUBLIC_APP_URL to https://key-tester-web.vercel.app (the current production domain). Redirect other domain variants to it.
 2. Verify domain ownership in Google Search Console. Submit /sitemap.xml and inspect the homepage URL. These account actions have not been performed here.
 3. Check the deployed page, robots.txt, sitemap.xml, icons, canonical URL, and social card. Test structured data with Google's Rich Results Test; eligibility does not guarantee a special result.
 4. Measure real mobile performance and Core Web Vitals after deployment. Avoid adding heavy advertising above the tester.
