@@ -15,55 +15,7 @@ import styles from "./keyboard.module.css"
 import { KeyCap, KEY_UNIT, KEY_GAP } from "./key-cap"
 import type { KeyState } from "@/stores/keyboard-store"
 
-// Single shared AudioContext — creating one per keypress (old approach) caused
-// TBT > 1 s because each allocation locks the main thread for ~50 ms.
-let _audioCtx: AudioContext | null = null
-
-const getAudioCtx = (): AudioContext | null => {
-  if (typeof AudioContext === "undefined") return null
-  if (!_audioCtx || _audioCtx.state === "closed") {
-    _audioCtx = new AudioContext()
-  }
-  if (_audioCtx.state === "suspended") {
-    void _audioCtx.resume()
-  }
-  return _audioCtx
-}
-
-const playSoundEffect = (profile: string, volume: number): void => {
-  if (profile === "off" || typeof window === "undefined") return
-  const ctx = getAudioCtx()
-  if (!ctx) return
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-  const now = ctx.currentTime
-  const vol = volume
-  if (profile === "blue") {
-    osc.type = "square"
-    osc.frequency.setValueAtTime(800, now)
-    osc.frequency.exponentialRampToValueAtTime(300, now + 0.02)
-    gain.gain.setValueAtTime(vol * 0.5, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.04)
-    osc.start(now)
-    osc.stop(now + 0.04)
-  } else if (profile === "red") {
-    osc.frequency.setValueAtTime(400, now)
-    osc.frequency.exponentialRampToValueAtTime(150, now + 0.04)
-    gain.gain.setValueAtTime(vol * 0.35, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08)
-    osc.start(now)
-    osc.stop(now + 0.08)
-  } else {
-    osc.frequency.setValueAtTime(300, now)
-    osc.frequency.exponentialRampToValueAtTime(100, now + 0.06)
-    gain.gain.setValueAtTime(vol * 0.2, now)
-    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12)
-    osc.start(now)
-    osc.stop(now + 0.12)
-  }
-}
+import { playKeySound } from "@/lib/key-sound"
 
 const RowRenderer = ({
   row,
@@ -180,7 +132,7 @@ export const KeyboardLayout = () => {
         const start = performance.now()
         pressTimestamps.current.set(code, start)
         pressKey(code, KEY_LABEL_MAP[code] ?? code, Date.now())
-        playSoundEffect(soundProfile, volume)
+        playKeySound(soundProfile, volume, code)
       }
     },
     [isRunning, pressKey, soundProfile, volume]

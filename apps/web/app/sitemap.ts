@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { blogPosts } from "@/lib/blog-posts"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://keytester.io"
+  const base = process.env["NEXT_PUBLIC_APP_URL"] ?? "https://key-tester-web.vercel.app"
 
   return [
     {
